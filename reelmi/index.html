@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Reelmi Pro | AI Assistant</title>
+
+    <!-- Fontes e Ícones -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+ <style>
+        /* ========================================================= */
+        /* ===== VARIÁVEIS DE CORES (REFINADAS) ==================== */
+        /* ========================================================= */
+        :root {
+            /* Fundo muito escuro (similar ao slate-950) */
+            --bg-body: #020617; 
+            /* Superfície levemente mais clara (similar ao slate-800) */
+            --bg-surface: #1e293b; 
+            /* Para elementos flutuantes/transparente */
+            --bg-glass: rgba(30, 41, 59, 0.7); 
+            
+            /* Azul Principal */
+            --primary: #3b82f6;
+            /* Azul escuro para contraste */
+            --primary-dark: #1e40af; 
+            /* Azul claro para hover/seleção */
+            --primary-light: #93c5fd; 
+
+            /* Degradê de alto contraste e profissional */
+            --primary-gradient: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            
+            /* Cor secundária (Ciano/Aqua) */
+            --secondary: #06b6d4;
+            
+            /* Texto principal branco suave */
+            --text-main: #e2e8f0;
+            /* Texto secundário/guia (cinza azulado) */
+            --text-muted: #94a3b8; 
+            
+            /* Borda sutil e elegante */
+            --border-subtle: 1px solid rgba(255, 255, 255, 0.08); 
+            
+            /* Brilho controlado e elegante */
+            --glow-primary: 0 4px 20px rgba(59, 130, 246, 0.4); 
+            
+            /* Arredondamento maior para cartões */
+            --radius-box: 20px; 
+            /* Arredondamento para botões/itens */
+            --radius-btn: 12px; 
+        }
+
+        /* ========================================================= */
+        /* ===== RESET BÁSICO E TIPOGRAFIA ========================= */
+        /* ========================================================= */
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+            /* Usando Inter, mais limpa e moderna */
+            font-family: 'Inter', sans-serif; 
+        }
+
+        body {
+            background: var(--bg-body);
+            color: var(--text-main);
+            height: 100vh;
+            overflow: hidden; 
+            display: flex;
+            font-size: 16px;
+            /* Suaviza as bordas do texto no Chrome/Edge */
+            -webkit-font-smoothing: antialiased; 
+        }
+
+        /* Títulos */
+        h1 { font-weight: 700; }
+        h2 { font-weight: 600; font-size: 24px; color: var(--text-main); }
+        h3 { font-weight: 500; font-size: 18px; color: var(--text-main); }
+
+        /* ========================================================= */
+        /* ===== FUNDO AMBIENTE (BRILHO) =========================== */
+        /* ========================================================= */
+        .ambient-glow {
+            position: fixed; 
+            top: 20%; 
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 900px; 
+            height: 900px;
+            /* Degradê radial mais denso */
+            background: radial-gradient(circle at center, rgba(59, 130, 246, 0.1) 0%, rgba(59, 130, 246, 0) 60%);
+            filter: blur(100px); 
+            z-index: -1;
+            animation: pulseGlow 10s ease-in-out infinite;
+            pointer-events: none; 
+        }
+
+        /* ========================================================= */
+        /* ===== SIDEBAR (MENU LATERAL) ============================ */
+        /* ========================================================= */
+        .sidebar {
+            width: 250px;
+            /* Fundo com mais transparência, melhor efeito glass */
+            background: rgba(15, 23, 42, 0.6); 
+            backdrop-filter: blur(15px);
+            border-right: var(--border-subtle);
+            display: flex; 
+            flex-direction: column; 
+            padding: 20px;
+            z-index: 100;
+        }
+
+        .brand { 
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+            margin-bottom: 30px; 
+            padding: 10px;
+            border-radius: var(--radius-btn);
+            /* Fundo sutil para o logotipo */
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+
+        .logo-icon { 
+            width: 30px; 
+            height: 30px; 
+            object-fit: contain; 
+            filter: drop-shadow(0 0 8px var(--primary));
+        }
+
+        .brand h1 { 
+            font-size: 18px; 
+            font-weight: 700; 
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-menu { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 8px; 
+            flex: 1; 
+        }
+
+        .nav-item {
+            padding: 12px 14px; 
+            border-radius: var(--radius-btn);
+            color: var(--text-muted); 
+            font-weight: 500; 
+            font-size: 15px;
+            cursor: pointer; 
+            display: flex; 
+            align-items: center; 
+            gap: 10px;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+        }
+
+        .nav-item:hover { 
+            background: rgba(59, 130, 246, 0.05); 
+            color: var(--primary-light);
+            border-color: rgba(59, 130, 246, 0.15);
+        }
+
+        /* Estilo elegante para o item ativo */
+        .nav-item.active {
+            color: white;
+            position: relative;
+            background: rgba(59, 130, 246, 0.15);
+            border-color: var(--primary);
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
+            font-weight: 600;
+        }
+
+        /* ========================================================= */
+        /* ===== ÁREA PRINCIPAL E VISTAS =========================== */
+        /* ========================================================= */
+        .main-stage {
+            flex: 1; 
+            position: relative; 
+            overflow: hidden; 
+            display: flex; 
+            flex-direction: column;
+        }
+
+        .view-section {
+            position: absolute; 
+            inset: 0; 
+            display: none; 
+            flex-direction: column;
+            padding: 40px; 
+            overflow-y: auto; 
+            opacity: 0; 
+            transform: translateX(20px);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .view-section.active { 
+            display: flex; 
+            opacity: 1; 
+            transform: translateX(0); 
+            z-index: 10; 
+        }
+
+        /* ========================================================= */
+        /* ===== CHAT E INPUT (ESTILO CLEAN) ======================= */
+        /* ========================================================= */
+        .chat-layout { 
+            max-width: 800px; 
+            width: 100%; 
+            margin: 0 auto; 
+            display: flex; 
+            flex-direction: column; 
+            height: 100%; 
+            padding-bottom: 30px; /* Espaço para o dock flutuante */
+        }
+        
+        .chat-feed { 
+            flex: 1; 
+            overflow-y: auto; 
+            padding-bottom: 20px; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 20px; /* Mais espaço entre mensagens */
+        }
+        
+        .msg-group { 
+            display: flex; 
+            gap: 16px; 
+            animation: slideIn 0.3s ease; 
+        }
+        
+        .msg-group.user { 
+            /* O usuário fica alinhado à direita para clareza */
+            justify-content: flex-end; 
+        }
+        
+        .avatar { 
+            width: 36px; 
+            height: 36px; 
+            border-radius: 50%; 
+            flex-shrink: 0; 
+            background: #cbd5e1; /* Avatar de usuário neutro */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--bg-body);
+        }
+        
+        .avatar.bot {
+            background: var(--primary-gradient); /* Avatar Gemini/Bot com gradiente */
+            color: white;
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+        }
+
+        .bubble {
+            padding: 16px 20px; 
+            border-radius: 18px; 
+            font-size: 15px; 
+            line-height: 1.6; 
+            max-width: 75%; /* Mais formal, menos largura */
+        }
+        
+        /* Mensagem do Bot: Fundo discreto e border sutil */
+        .msg-group.bot .bubble { 
+            background: var(--bg-surface); 
+            color: var(--text-main); 
+            border: var(--border-subtle); 
+            border-top-left-radius: 6px; 
+        }
+        
+        /* Mensagem do Usuário: Destaque com o azul principal */
+        .msg-group.user .bubble { 
+            background: var(--primary-gradient); 
+            color: white; 
+            border-bottom-right-radius: 6px; 
+            box-shadow: var(--glow-primary); 
+        }
+
+        /* Bloco de Input de estilo flutuante */
+        .input-dock-container {
+            position: sticky;
+            bottom: 0;
+            padding: 0 40px 40px 40px;
+            background: linear-gradient(to top, var(--bg-body) 0%, rgba(2, 6, 23, 0.0) 100%);
+            z-index: 100;
+        }
+
+        .input-dock {
+            background: var(--bg-glass); 
+            backdrop-filter: blur(20px);
+            border: var(--border-subtle); 
+            border-radius: 30px;
+            padding: 10px; 
+            display: flex; 
+            align-items: center; 
+            gap: 8px;
+            width: 100%;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Adiciona um brilho sutil ao focar no dock */
+        .input-dock:focus-within {
+            border-color: var(--primary);
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+        }
+        
+        .dock-input {
+            flex: 1; 
+            background: transparent; 
+            border: none; 
+            color: var(--text-main); 
+            font-size: 16px; 
+            padding: 10px 16px; 
+            resize: none;
+            overflow-y: hidden; /* Controlado pelo JS se necessário */
+        }
+        
+        .dock-input:focus { outline: none; }
+        
+        .dock-btn {
+            width: 40px; 
+            height: 40px; 
+            border-radius: 50%; 
+            border: none; 
+            cursor: pointer;
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 18px; 
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+        
+        .btn-mic { 
+            background: transparent; 
+            color: var(--text-muted); 
+        }
+
+        .btn-mic:hover { 
+            background: rgba(59, 130, 246, 0.1); 
+            color: var(--primary-light); 
+        }
+        
+        .btn-send { 
+            background: var(--primary-gradient); 
+            color: white; 
+            box-shadow: 0 2px 10px rgba(59, 130, 246, 0.5);
+        }
+        .btn-send:hover { 
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.7);
+        }
+
+        /* ========================================================= */
+        /* ===== RESPONSIVIDADE E ANIMAÇÕES ======================== */
+        /* ========================================================= */
+        @keyframes pulseGlow {
+            0%, 100% { opacity: 0.6; transform: translate(-50%, -50%) scale(1); }
+            50% { opacity: 0.9; transform: translate(-50%, -50%) scale(1.05); }
+        }
+        
+        @keyframes slideIn { 
+            from { opacity: 0; transform: translateY(15px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+
+        /* Mobile */
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .bottom-nav { display: flex; }
+            .main-stage { padding-bottom: 70px; }
+            .view-section { padding: 20px 10px 20px 10px; }
+            .chat-layout { padding-bottom: 20px; }
+            .input-dock-container { 
+                padding: 0 15px 15px 15px; 
+                /* Ajusta para a barra de navegação inferior */
+                bottom: 70px; 
+            }
+            .chat-feed { padding-bottom: 10px; }
+            .bubble { max-width: 90%; font-size: 14px; }
+        }
+
+        /* ========================================================= */
+        /* ===== SCROLLBAR PERSONALIZADO =========================== */
+        /* ========================================================= */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-body); }
+        ::-webkit-scrollbar-thumb { background: var(--primary-dark); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+    </style>
+</head>
+<body>
+
+    <div class="ambient-glow"></div>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="brand">
+            <img src="reelmilogo.png" class="logo-icon" alt="Reelmi" onerror="this.src='https://cdn-icons-png.flaticon.com/512/4712/4712035.png'">
+            <h1>Reelmi Pro</h1>
+        </div>
+        <div class="nav-menu">
+            <div class="nav-item active" onclick="go('home', this)"><i class="fa-solid fa-house"></i> Início</div>
+            <div class="nav-item" onclick="go('chat', this)"><i class="fa-solid fa-robot"></i> Chat IA</div>
+            <div class="nav-item" onclick="go('analytics', this)"><i class="fa-solid fa-chart-bar"></i> Analytics</div>
+            <div class="nav-item" onclick="go('tools', this)"><i class="fa-solid fa-toolbox"></i> Ferramentas</div>
+            <div class="nav-item" onclick="go('history', this)"><i class="fa-solid fa-history"></i> Histórico</div>
+            <div class="nav-item" onclick="go('settings', this)"><i class="fa-solid fa-gear"></i> Configurações</div>
+            <div class="nav-item" onclick="go('help', this)"><i class="fa-solid fa-circle-question"></i> Ajuda</div>
+        </div>
+        
+        <div style="margin-top:auto; padding-top:20px; border-top:1px solid rgba(255,255,255,0.1);">
+            <div style="display:flex; gap:10px; align-items:center; margin-bottom:15px;">
+                <div class="avatar" id="sideAvatar">U</div>
+                <div>
+                    <div style="font-size:14px; font-weight:600;" id="sideName">Usuário</div>
+                    <div style="font-size:11px; color:var(--primary);">Assinante Pro</div>
+                </div>
+            </div>
+            <div class="btn btn-secondary" style="width:100%;" onclick="showUpgradeModal()">
+                <i class="fa-solid fa-crown"></i> Fazer Upgrade
+            </div>
+        </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main-stage">
+        
+        <!-- HOME -->
+        <div class="view-section active" id="view-home">
+            <div style="max-width: 1000px; margin: 0 auto; width: 100%;">
+                
+                <!-- CORRIGIDO: justify-content: space-between -->
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                    <div>
+                        <h2 id="helloText" style="font-size: 28px; margin-bottom: 4px;">Olá, Usuário! 👋</h2>
+                        <p style="color: var(--text-muted);">Bem-vindo de volta</p>
+                    </div>
+                    <div style="display: flex; gap: 12px;">
+                        <div class="btn btn-secondary" onclick="alert('Sem notificações novas')">
+                            <i class="fa-solid fa-bell"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stats -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number" id="chatCount">0</div>
+                        <div style="color: var(--text-muted); font-size: 14px;">Conversas</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="voiceCount">0</div>
+                        <div style="color: var(--text-muted); font-size: 14px;">Voz</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">100%</div>
+                        <div style="color: var(--text-muted); font-size: 14px;">Precisão</div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <h3 style="margin: 32px 0 16px 0;">Ações Rápidas</h3>
+                <div class="quick-actions">
+                    <div class="quick-action" onclick="ouvir()">
+                        <i class="fa-solid fa-microphone" style="color: var(--primary); font-size: 20px; margin-bottom: 8px;"></i>
+                        <div style="font-size: 13px; font-weight: 600; margin-top:5px;">Voz</div>
+                    </div>
+                    <div class="quick-action" onclick="go('chat')">
+                        <i class="fa-solid fa-message" style="color: var(--primary); font-size: 20px; margin-bottom: 8px;"></i>
+                        <div style="font-size: 13px; font-weight: 600; margin-top:5px;">Chat</div>
+                    </div>
+                    <div class="quick-action" onclick="showQuickTask('code')">
+                        <i class="fa-solid fa-code" style="color: var(--primary); font-size: 20px; margin-bottom: 8px;"></i>
+                        <div style="font-size: 13px; font-weight: 600; margin-top:5px;">Código</div>
+                    </div>
+                    <div class="quick-action" onclick="showQuickTask('translate')">
+                        <i class="fa-solid fa-language" style="color: var(--primary); font-size: 20px; margin-bottom: 8px;"></i>
+                        <div style="font-size: 13px; font-weight: 600; margin-top:5px;">Traduzir</div>
+                    </div>
+                </div>
+
+                <!-- Cards -->
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-top: 32px;">
+                    <div class="feature-card" onclick="go('chat')">
+                        <div class="card-icon-box"><i class="fa-solid fa-robot"></i></div>
+                        <h3 style="margin-bottom: 8px;">Chat Inteligente</h3>
+                        <p style="color: var(--text-muted); font-size: 14px;">Converse com a IA</p>
+                    </div>
+                    <div class="feature-card" onclick="ouvir()">
+                        <div class="card-icon-box"><i class="fa-solid fa-microphone"></i></div>
+                        <h3 style="margin-bottom: 8px;">Comando de Voz</h3>
+                        <p style="color: var(--text-muted); font-size: 14px;">Fale para interagir</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CHAT -->
+        <div class="view-section" id="view-chat">
+            <div class="chat-layout">
+                <div class="chat-header">
+                    <h2>Chat Reelmi IA</h2>
+                    <div class="btn btn-secondary" onclick="clearChat()">
+                        <i class="fa-solid fa-trash"></i> Limpar
+                    </div>
+                </div>
+                
+                <div class="chat-feed" id="chatFeed">
+                    <div class="msg-group bot">
+                        <div class="avatar">🤖</div>
+                        <div class="bubble">Olá! Pergunte "Como você está?" ou use o microfone.</div>
+                    </div>
+                </div>
+                
+                <div class="input-dock">
+                    <button class="dock-btn btn-mic" onclick="ouvir()"><i class="fa-solid fa-microphone"></i></button>
+                    <input type="text" class="dock-input" id="chatInput" placeholder="Digite..." onkeypress="handleKeyPress(event)">
+                    <button class="dock-btn btn-send" onclick="sendMsg()"><i class="fa-solid fa-paper-plane"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- OUTRAS TELAS (Placeholders) -->
+        <div class="view-section" id="view-analytics"><div class="feature-card"><h2>Analytics</h2><p>Em breve...</p></div></div>
+        <div class="view-section" id="view-tools"><div class="feature-card"><h2>Ferramentas</h2><p>Em breve...</p></div></div>
+        <div class="view-section" id="view-history"><div class="feature-card"><h2>Histórico</h2><p>Em breve...</p></div></div>
+        <div class="view-section" id="view-settings"><div class="feature-card"><h2>Configurações</h2><p>Em breve...</p></div></div>
+        <div class="view-section" id="view-help"><div class="feature-card"><h2>Ajuda</h2><p>Em breve...</p></div></div>
+
+    </main>
+
+    <!-- MOBILE NAV -->
+    <nav class="bottom-nav">
+        <button class="nav-icon active" onclick="go('home', this)"><i class="fa-solid fa-house"></i></button>
+        <button class="nav-icon" onclick="go('chat', this)"><i class="fa-solid fa-robot"></i></button>
+        <button class="nav-icon" onclick="go('analytics', this)"><i class="fa-solid fa-chart-bar"></i></button>
+        <button class="nav-icon" onclick="go('settings', this)"><i class="fa-solid fa-gear"></i></button>
+    </nav>
+
+    <!-- VOICE OVERLAY -->
+    <div class="voice-overlay" id="voiceOverlay">
+        <img src="roboreelmi.png" class="robot-img" onerror="this.src='https://cdn-icons-png.flaticon.com/512/4712/4712035.png'">
+        <div class="voice-status" id="voiceStatus">Ouvindo...</div>
+        <button class="btn btn-secondary" onclick="closeVoice()" style="margin-top: 30px;">Cancelar</button>
+    </div>
+
+    <!-- JAVASCRIPT (LÓGICA DA PROFESSORA) -->
+    <script>
+        // 1. DADOS (PERGUNTAS E RESPOSTAS)
+        const conhecimentos = [
+            { pergunta: "como você está", resposta: "Estou ótimo! Obrigado por perguntar." },
+            { pergunta: "qual o seu nome", resposta: "Eu sou o Reelmi Pro." },
+            { pergunta: "o que você faz", resposta: "Eu sou um assistente virtual criado para te ajudar." },
+            { pergunta: "bom dia", resposta: "Bom dia! Tudo bem com você?" },
+            { pergunta: "boa tarde", resposta: "Boa tarde! Como posso ajudar?" },
+            { pergunta: "boa noite", resposta: "Boa noite! Bom descanso." },
+            { pergunta: "O que suporte ventilatório avançado?", resposta: "É a Ventilação Mecânica Invasiva (VMI), um suporte de vida que substitui a respiração do paciente, geralmente em uma UTI." },
+            { pergunta: "Quando é necessário usar o oxigênio em neonatal?", resposta: "É necessário quando o bebê apresenta insuficiência respiratória (evidenciada por esforço respiratório, cianose - pele azulada) e baixa saturação de oxigênio (hipoxemia), cujos limites ideais variam conforme a idade gestacional e o tempo de vida."},
+            { pergunta: "O que é Suporte Ventilatório Invasivo?", resposta: "O Suporte Ventilatório Invasivo (SVI), ou Ventilação Mecânica Invasiva (VMI), é um método que utiliza um tubo endotraqueal (ou cânula de traqueostomia) para conectar o paciente a um ventilador mecânico, assumindo total ou parcialmente a função respiratória."},
+            { pergunta: "Quando deve ser usado o Surfactante no neonatal?", resposta: "O Surfactante é usado em recém-nascidos (RN), principalmente pré-termos, que desenvolvem a Síndrome do Desconforto Respiratório (SDR). Ele é administrado para diminuir a tensão superficial nos pulmões e permitir que os alvéolos permaneçam abertos, facilitando a respiração."},
+            { pergunta: "Qual é a diferença entre os dispositivos comuns de baixo fluxo de oxigênio usados em recém-nascidos (RN) e pediatria, como o cateter nasal?", resposta: "Os dispositivos de oxigenioterapia de baixo fluxo visam fornecer oxigênio suplementar em concentrações baixas a moderadas. O cateter nasal (ou cânula nasal) é o método mais simples e confortável, entregando oxigênio misturado ao ar ambiente com fluxos baixos (geralmente até 2 a 3 L/min em pediatria e 0,1 a 1 L/min em neonatal), resultando em uma concentração de oxigênio (FiO₂) variável e imprecisa. Outro método comum é a máscara facial simples, que permite fluxos um pouco maiores (geralmente até 6 a 8 L/min) para alcançar concentrações mais altas (cerca de 40% a 60% de FiO₂), mas também é variável e menos precisa. No entanto, para neonatos com necessidade contínua, o Capuz Cefálico (Hood) ou a Cânula Nasal de Alto Fluxo são frequentemente preferidos por oferecerem umidade e calor e, no caso do Hood, uma FiO₂ mais estável e precisa. O limite de fluxo de 4 L/min que você mencionou é muitas vezes o máximo tolerado por uma máscara simples antes de causar irritação ou desconforto, mas não é uma regra rígida para todos os dispositivos ou faixas etárias."}
+        ];
+
+        let chatCount = 0;
+        let voiceCount = 0;
+
+        // 2. FALAR
+        function falar(texto) {
+            window.speechSynthesis.cancel(); // Para a fala anterior
+            const discurso = new SpeechSynthesisUtterance(texto);
+            discurso.lang = "pt-BR";
+            discurso.rate = 1.1;
+            window.speechSynthesis.speak(discurso);
+        }
+
+        // 3. OUVIR
+        function ouvir() {
+            if (!('webkitSpeechRecognition' in window)) {
+                alert("Use o Google Chrome para comandos de voz.");
+                return;
+            }
+
+            const overlay = document.getElementById('voiceOverlay');
+            overlay.classList.add('active');
+            document.getElementById('voiceStatus').textContent = "Pode falar...";
+
+            const reconhecer = new webkitSpeechRecognition();
+            reconhecer.lang = "pt-BR";
+            reconhecer.continuous = false;
+            reconhecer.interimResults = false;
+
+            reconhecer.start();
+
+            reconhecer.onresult = function(event) {
+                const textoFalado = event.results[0][0].transcript;
+                overlay.classList.remove('active');
+                
+                // Coloca no input e envia
+                document.getElementById('chatInput').value = textoFalado;
+                processarMensagem(textoFalado);
+
+                // Atualiza contador
+                voiceCount++;
+                document.getElementById('voiceCount').textContent = voiceCount;
+            };
+
+            reconhecer.onerror = function() {
+                document.getElementById('voiceStatus').textContent = "Não entendi...";
+                setTimeout(() => overlay.classList.remove('active'), 1500);
+            };
+
+            reconhecer.onend = function() {
+                // Garante que fecha se parar de ouvir
+                setTimeout(() => {
+                    if(overlay.classList.contains('active')) overlay.classList.remove('active');
+                }, 5000);
+            };
+        }
+
+        // 4. PROCESSAR E RESPONDER (COM O 'FOR')
+        function processarMensagem(texto) {
+            if(!texto.trim()) return;
+
+            // Mostra mensagem do usuário
+            addChatBubble(texto, 'user');
+            document.getElementById('chatInput').value = '';
+            go('chat'); // Garante que vá para a tela de chat
+
+            const textoLower = texto.toLowerCase();
+            let respostaFinal = "Desculpe, não entendi. Pergunte 'Como você está?'.";
+
+            // LAÇO FOR PARA PROCURAR A RESPOSTA
+            for(let i = 0; i < conhecimentos.length; i++) {
+                if(textoLower.includes(conhecimentos[i].pergunta)) {
+                    respostaFinal = conhecimentos[i].resposta;
+                    break;
+                }
+            }
+
+            // Responde depois de um tempinho
+            setTimeout(() => {
+                addChatBubble(respostaFinal, 'bot');
+                falar(respostaFinal);
+                chatCount++;
+                document.getElementById('chatCount').textContent = chatCount;
+            }, 600);
+        }
+
+        // AUXILIARES
+        function sendMsg() {
+            processarMensagem(document.getElementById('chatInput').value);
+        }
+
+        function handleKeyPress(e) {
+            if(e.key === 'Enter') sendMsg();
+        }
+
+        function addChatBubble(text, type) {
+            const feed = document.getElementById('chatFeed');
+            const div = document.createElement('div');
+            div.className = `msg-group ${type}`;
+            div.innerHTML = `
+                <div class="avatar">${type === 'bot' ? '🤖' : '👤'}</div>
+                <div class="bubble">${text}</div>
+            `;
+            feed.appendChild(div);
+            feed.scrollTop = feed.scrollHeight;
+        }
+
+        function go(viewId, btn) {
+            // Esconde todas as views
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            // Mostra a escolhida
+            document.getElementById('view-' + viewId).classList.add('active');
+
+            // Atualiza menu (se clicou num botão)
+            if(btn) {
+                document.querySelectorAll('.nav-item, .nav-icon').forEach(el => el.classList.remove('active'));
+                btn.classList.add('active');
+            }
+        }
+
+        function clearChat() {
+            document.getElementById('chatFeed').innerHTML = '';
+            addChatBubble('Chat limpo.', 'bot');
+        }
+
+        function closeVoice() {
+            document.getElementById('voiceOverlay').classList.remove('active');
+        }
+
+        function showQuickTask(type) {
+            go('chat');
+            setTimeout(() => {
+                const msg = type === 'code' ? 'Gerar código de que?' : 'Traduzir o que?';
+                addChatBubble(msg, 'bot');
+                falar(msg);
+            }, 500);
+        }
+
+        function showUpgradeModal() {
+            alert("Em breve!");
+        }
+    </script>
+</body>
+</html>
