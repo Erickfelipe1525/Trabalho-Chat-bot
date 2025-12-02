@@ -74,6 +74,7 @@
         font-weight: 700;
         background: var(--primary-gradient);
         -webkit-background-clip: text;
+        background-clip: text;
         -webkit-text-fill-color: transparent;
     }
 
@@ -200,6 +201,7 @@
         margin-bottom: 10px;
         background: var(--primary-gradient);
         -webkit-background-clip: text;
+        background-clip: text;
         -webkit-text-fill-color: transparent;
     }
 
@@ -320,7 +322,7 @@
     <!-- SIDEBAR GERAL (Estilo GPT/Gemini) -->
     <aside>
         <div class="brand-area">
-            <img src="logoreelmi.png" alt="Logo" onerror="this.src='https://cdn-icons-png.flaticon.com/512/9623/9623631.png'">
+            <img src="reelmilogo.png" alt="Logo" onerror="this.src='https://cdn-icons-png.flaticon.com/512/9623/9623631.png'">
             <h1>Reelmi AI</h1>
         </div>
 
@@ -418,7 +420,6 @@
         <div id="chat-view">
             <div id="chat-history"></div>
         </div>
-
         <!-- INPUT FIXO -->
         <div class="input-dock">
             <div class="input-wrapper">
@@ -446,16 +447,18 @@
             <i class="fas fa-times"></i> Sair
         </button>
     </div>
-
 <script>
     /* 
        =========================================================
        DADOS (LÓGICA DO SEU TRABALHO MANTIDA)
        =========================================================
-       A interface é genérica, mas se o professor perguntar
-       sobre ventilação mecânica, ele sabe responder!
+       A interface é genérica, mas tem conhecimento especializado
+       em ventilação mecânica e neonatologia!
     */
+    
+    // PERGUNTAS ESPECIALIZADAS - ADICIONANDO AS NOVAS PERGUNTAS
     const perguntas = [
+        // Perguntas originais de ventilação mecânica
         "o que é ventilação mecânica",
         "quais os tipos de ventilação mecânica",
         "o que é cpap",
@@ -466,6 +469,13 @@
         "quais as complicações da ventilação mecânica",
         "como fazer o desmame da ventilação mecânica",
         "o que é síndrome do desconforto respiratório agudo",
+        
+        // NOVAS PERGUNTAS SOBRE NEONATOLOGIA
+        "o que suporte ventilatório avançado",
+        "quando a necessário usado do oxigênio em neonatal",
+        "o que o suporte ventilatório invasivo",
+        "quanto teve ser usado insurir no neonatal",
+        
         // Adicionando umas genéricas para os botões novos funcionarem
         "criar um código em python",
         "escrever um e-mail formal",
@@ -473,7 +483,9 @@
         "resumir este texto"
     ];
 
+    // RESPOSTAS ESPECIALIZADAS - ADICIONANDO AS NOVAS RESPOSTAS
     const respostas = [
+        // Respostas originais de ventilação mecânica
         "Ventilação mecânica é o suporte artificial à respiração, utilizado quando o paciente não consegue respirar adequadamente por conta própria.",
         "Existem dois tipos principais: ventilação invasiva (com tubo endotraqueal) e não invasiva (com máscaras ou interfaces).",
         "CPAP (Continuous Positive Airway Pressure) é uma modalidade de ventilação não invasiva que mantém pressão positiva contínua nas vias aéreas.",
@@ -484,6 +496,13 @@
         "Complicações incluem barotrauma, volutrauma, pneumonia associada à ventilação, lesão por pressão e desconforto do paciente.",
         "O desmame deve ser gradual, avaliando a capacidade do paciente de respirar espontaneamente através de testes de respiração espontânea e redução progressiva do suporte.",
         "A SDRA é uma condição grave caracterizada por inflamação pulmonar difusa, edema não cardiogênico e hipoxemia refratária.",
+        
+        // NOVAS RESPOSTAS SOBRE NEONATOLOGIA
+        "O suporte ventilatório avançado em neonatologia inclui modalidades como High-Frequency Oscillatory Ventilation (HFOV), High-Frequency Jet Ventilation (HFJV), ventilação com oscilação de volume, e suporte com óxido nítrico inalado. Estas técnicas são usadas quando a ventilação convencional não é suficiente para manter a oxigenação adequada em recém-nascidos críticos.",
+        "O oxigênio em neonatologia deve ser usado quando a saturação periférica de oxigênio (SpO2) estiver abaixo de 90-92% em recém-nascidos a termo, ou conforme protocolos específicos para prematuros. É crucial monitorar frequentemente para evitar tanto a hipoxemia quanto a hiperoxemia, que pode causar retinopatia da prematuridade e lesão pulmonar.",
+        "O suporte ventilatório invasivo em neonatos envolve a intubação endotraqueal e conexão a um ventilador mecânico. É indicado em casos de: apneia grave, insuficiência respiratória refratária a CPAP, necessidade de altas concentrações de oxigênio (FiO2 > 0.6-0.8), acidose respiratória grave (pH < 7.25), ou instabilidade hemodinâmica.",
+        "A insuflação em neonatologia (como manobras de recrutamento alveolar) deve ser realizada com extrema cautela. Pressões de insuflação geralmente variam de 20-30 cmH2O por 10-20 segundos, mas devem ser individualizadas. Em prematuros extremos, pressões mais baixas (15-25 cmH2O) são recomendadas para prevenir barotrauma e volutrauma.",
+        
         // Respostas Genéricas
         "Aqui está um exemplo de código Python: `print('Hello World')`",
         "Assunto: Reunião. Prezado Senhor, gostaria de agendar uma reunião...",
@@ -494,12 +513,44 @@
     /* --- LÓGICA DO CHAT --- */
     function encontrarResposta(input) {
         const texto = input.toLowerCase();
-        for(let i=0; i < perguntas.length; i++) {
-            if(texto.includes(perguntas[i])) return respostas[i];
+        
+        // Primeiro, verificar correspondências exatas
+        for(let i = 0; i < perguntas.length; i++) {
+            if(texto.includes(perguntas[i])) {
+                return respostas[i];
+            }
         }
-        return "Como sou um modelo de IA, posso ajudar com códigos, textos e informações. Sobre este tópico específico, não tenho dados no momento.";
+        
+        // Verificar palavras-chave relacionadas
+        const palavrasChave = [
+            { palavras: ["ventilação", "respiração", "ventilador"], respostaIndex: 0 },
+            { palavras: ["cpap", "pressão positiva"], respostaIndex: 2 },
+            { palavras: ["oxigênio", "o2", "saturação"], respostaIndex: 4 },
+            { palavras: ["monitorar", "monitorização", "parâmetros"], respostaIndex: 5 },
+            { palavras: ["peep", "pressão expiratória"], respostaIndex: 6 },
+            { palavras: ["complicações", "riscos", "efeitos adversos"], respostaIndex: 7 },
+            { palavras: ["desmame", "desconectar", "retirar ventilador"], respostaIndex: 8 },
+            { palavras: ["sdra", "síndrome", "desconforto respiratório"], respostaIndex: 9 },
+            { palavras: ["neonatal", "recém-nascido", "prematuro", "bebê"], respostaIndex: 11 }, // oxigênio neonatal
+            { palavras: ["suporte avançado", "hfov", "hfjev"], respostaIndex: 10 }, // suporte avançado
+            { palavras: ["invasivo", "intubação", "tubo endotraqueal"], respostaIndex: 12 }, // suporte invasivo
+            { palavras: ["insuflação", "recrutamento", "manobra"], respostaIndex: 13 }, // insuflação
+            { palavras: ["python", "código", "programação"], respostaIndex: 14 },
+            { palavras: ["e-mail", "email", "correio"], respostaIndex: 15 },
+            { palavras: ["imagem", "arte", "desenho"], respostaIndex: 16 },
+            { palavras: ["resumir", "analisar", "documento"], respostaIndex: 17 }
+        ];
+        
+        for(const chave of palavrasChave) {
+            for(const palavra of chave.palavras) {
+                if(texto.includes(palavra)) {
+                    return respostas[chave.respostaIndex];
+                }
+            }
+        }
+        
+        return "Como sou um modelo de IA especializado em saúde, posso ajudar com questões sobre ventilação mecânica, neonatologia, e outros tópicos médicos. Sobre este tópico específico, não tenho informações detalhadas no momento.";
     }
-
     function addMsg(texto, tipo) {
         document.getElementById('dashboard-view').style.display = 'none';
         document.getElementById('chat-view').style.display = 'flex';
@@ -601,12 +652,10 @@
 
         recognition.start();
     }
-
     function pararGravacao() {
         if(recognition) recognition.stop();
         isRecording = false;
     }
 </script>
-
 </body>
 </html>
